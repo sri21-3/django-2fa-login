@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard - 2FA Email System{% endblock %}
+
+{% block content %}
+<div class="auth-header">
+    <h2><i class="fas fa-tachometer-alt text-primary"></i> Dashboard</h2>
+    <p>Welcome back, <strong>{{ user.get_full_name|default:user.username }}</strong>!</p>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body text-center">
+                <i class="fas fa-user-circle fa-3x text-primary mb-3"></i>
+                <h5 class="card-title">Account Information</h5>
+                <p class="card-text">
+                    <strong>Username:</strong> {{ user.username }}<br>
+                    <strong>Email:</strong> {{ user.email }}<br>
+                    <strong>Last Login:</strong> {{ user.last_login|date:"M d, Y H:i"|default:"Never" }}
+                </p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body text-center">
+                <i class="fas fa-shield-alt fa-3x text-success mb-3"></i>
+                <h5 class="card-title">Security Status</h5>
+                <p class="card-text">
+                    <span class="badge bg-success">2FA Enabled</span><br>
+                    <small class="text-muted">Your account is protected with email-based 2FA</small>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card border-0 shadow-sm">
+    <div class="card-header bg-white">
+        <h5 class="mb-0"><i class="fas fa-history"></i> Recent OTP Activity</h5>
+    </div>
+    <div class="card-body">
+        {% if recent_otps %}
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>OTP Code</th>
+                            <th>Created At</th>
+                            <th>Status</th>
+                            <th>Verified</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for otp in recent_otps %}
+                        <tr>
+                            <td>
+                                <code>{{ otp.otp_code }}</code>
+                            </td>
+                            <td>{{ otp.created_at|date:"M d, Y H:i:s" }}</td>
+                            <td>
+                                {% if otp.is_used %}
+                                    <span class="badge bg-secondary">Used</span>
+                                {% elif otp.is_expired %}
+                                    <span class="badge bg-danger">Expired</span>
+                                {% else %}
+                                    <span class="badge bg-warning">Pending</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if otp.is_verified %}
+                                    <i class="fas fa-check-circle text-success"></i>
+                                {% else %}
+                                    <i class="fas fa-times-circle text-danger"></i>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="text-center py-4">
+                <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+                <p class="text-muted">No OTP activity found</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<div class="text-center mt-4">
+    <a href="{% url 'authentication:logout' %}" class="btn btn-outline-danger">
+        <i class="fas fa-sign-out-alt"></i> Logout
+    </a>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Auto-refresh the page every 30 seconds to show updated OTP status
+    setTimeout(function() {
+        location.reload();
+    }, 30000);
+});
+</script>
+{% endblock %}

@@ -1,0 +1,19 @@
+{{ site_name }} - Your 2FA Login Code
+
+Hello {{ user.get_full_name|default:user.username }}!
+
+You have requested to log in to your account. Please use the following One-Time Password (OTP) to complete your login:
+
+OTP Code: {{ otp_code }}
+
+IMPORTANT SECURITY INFORMATION:
+- This code will expire in {{ expiry_minutes }} minutes
+- Never share this code with anyone
+- If you didn't request this login, please ignore this email
+- For security reasons, this code can only be used once
+
+If you're having trouble logging in, please contact our support team.
+
+---
+This is an automated message from {{ site_name }}. Please do not reply to this email.
+© 2024 {{ site_name }}. All rights reserved.
