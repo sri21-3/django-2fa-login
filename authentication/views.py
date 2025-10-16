@@ -50,7 +50,7 @@ def register_view(request):
         if form.is_valid():
             user = form.save()
             messages.success(request, 'Registration successful! You can now log in.')
-            return redirect('login')
+            return redirect('authentication:login')
     else:
         form = UserRegistrationForm()
     
@@ -60,7 +60,7 @@ def register_view(request):
 def login_view(request):
     """User login view - step 1: email and password."""
     if request.user.is_authenticated:
-        return redirect('dashboard')
+        return redirect('authentication:dashboard')
     
     if request.method == 'POST':
         form = LoginForm(request.POST)
@@ -178,7 +178,7 @@ def logout_view(request):
     """User logout view."""
     logout(request)
     messages.success(request, 'You have been logged out successfully.')
-    return redirect('login')
+    return redirect('authentication:login')
 
 
 @login_required
@@ -215,4 +215,4 @@ def resend_otp_view(request):
 
 def home_view(request):
     """Home page view - redirects to login."""
-    return redirect('login')
+    return redirect('authentication:login')
