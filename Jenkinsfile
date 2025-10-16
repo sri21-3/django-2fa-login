@@ -9,7 +9,8 @@ pipeline {
   }
 
   environment {
-    PYTHON = 'python3'
+    PYTHON = './venv/bin/python'
+    PIP = './venv/bin/pip'
     DOCKER_IMAGE = '2fa-email-login:web'
   }
 
@@ -23,17 +24,10 @@ pipeline {
     stage('Setup Python') {
       steps {
         sh '''
-        # check python version
-        python3 -V
-        
-        # Create virtual environment in the workspace
-        python3 -m venv venv
-        
-        # Activat the virtual environment
-        . venv/bin/activate
-        
-        pip install --upgrade pip
-        pip install -r requirements.txt
+          python3 -V
+          python3 -m venv venv
+          ./venv/bin/pip install --upgrade pip
+          ./venv/bin/pip install -r requirements.txt
         '''
       }
     }
@@ -41,13 +35,20 @@ pipeline {
     stage('Lint & Checks') {
       steps {
         sh '''
-              source venv/bin/activate
-              pip install flake8 black isort
-              bin/flake8 .
-              isort --check-only --profile black --line-length 88 . || true
-              black --check --line-length 88 . || true
-              SECRET_KEY=ci DEBUG=False ${PYTHON} manage.py check --deploy --fail-level WARNING || true
-            '''
+          ./venv/bin/pip install flake8 black isort
+
+          echo "Running flake8..."
+          ./venv/bin/flake8 .
+
+          echo "Running isort..."
+          ./venv/bin/isort --check-only --profile black --line-length 88 . || true
+
+          echo "Running black..."
+          ./venv/bin/black --check --line-length 88 . || true
+
+          echo "Running Django system checks..."
+          SECRET_KEY=ci DEBUG=False ./venv/bin/python manage.py check --deploy --fail-level WARNING || true
+        '''
       }
     }
 
@@ -71,5 +72,4 @@ pipeline {
     }
   }
 }
-
 
