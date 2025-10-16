@@ -40,11 +40,13 @@ pipeline {
 
     stage('Lint & Checks') {
       steps {
-        sh "pip install flake8 black isort"
-        sh "flake8 || true"
-        sh "isort --check-only --profile black --line-length 88 . || true"
-        sh "black --check --line-length 88 . || true"
-        sh "SECRET_KEY=ci DEBUG=False ${PYTHON} manage.py check --deploy --fail-level WARNING || true"
+        sh '''
+              ./venv/bin/pip install flake8 black isort
+              ./venv/bin/flake8 .
+              ./venv/bin/isort --check-only --profile black --line-length 88 . || true
+              ./black --check --line-length 88 . || true
+              ./SECRET_KEY=ci DEBUG=False ${PYTHON} manage.py check --deploy --fail-level WARNING || true
+            '''
       }
     }
 
