@@ -22,7 +22,16 @@ pipeline {
 
     stage('Setup Python') {
       steps {
-        sh "${PYTHON} -V || true"
+        sh '''
+        # check python version
+        python3 -V
+        
+        # Create virtual environment in the workspace
+        python3 -m venv venv
+        
+        # Activat the virtual environment
+        source venv/bin/activate
+        
         sh "python3 -m pip install --upgrade pip"
         sh "pip install -r requirements.txt"
       }
