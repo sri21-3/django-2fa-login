@@ -30,10 +30,10 @@ pipeline {
         python3 -m venv venv
         
         # Activat the virtual environment
-        source venv/bin/activate
+        . venv/bin/activate
         
-        sh "python3 -m pip install --upgrade pip"
-        sh "pip install -r requirements.txt"
+        pip install --upgrade pip
+        pip install -r requirements.txt
         '''
       }
     }
